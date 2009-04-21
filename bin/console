@@ -1,0 +1,19 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'irb'
+
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
+
+require 'ec2x_agent'
+
+if (__FILE__ == $0)
+  IRB.start(__FILE__)
+else
+  # check -e option
+  if /^-e$/ =~ $0
+    IRB.start(__FILE__)
+  else
+    IRB.setup(__FILE__)
+  end
+end

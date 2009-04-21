@@ -1,0 +1,51 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
+
+# -- System Libraries -------------------------------------------------------
+
+require 'yaml'
+require 'optparse'
+require 'eventmachine'
+
+# -- Application Libraries --------------------------------------------------
+
+require 'ec2x_agent'
+
+# -- Utility Methods --------------------------------------------------------
+
+def show_help
+  puts "Usage: ec2x [--config=PATH] [--help] [--verbose] [--daemon] [--url=URL] [COMMAND [ARGS ...]]"
+  exit(0)
+end
+
+# -- Option Parsing ---------------------------------------------------------
+
+op = OptionParser.new
+options = { }
+
+op.on("-c", "--config=s") { |config_file| options[:config_file] = config_file }
+op.on("-u", "--url=s") { |config_file| options[:master_url] = url }
+op.on("-v", "--verbose") { options[:verbose] = true }
+op.on("-d", "--daemon") { options[:daemon] = true }
+op.on("-h", "--help") { show_help }
+
+args = op.parse(*ARGV)
+
+begin
+  if (args.empty?)
+    if (options[:daemon])
+      Ec2x::Agent.run(options)
+    else
+      Ec2x::Shell.run(options)
+    end
+  else
+    Ec2x::CommandDelegator.new(options).interpret(args)
+  end
+rescue Ec2x::Exception => e
+  puts e.message
+  puts "Exiting."
+  exit(-1)
+end
