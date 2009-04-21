@@ -5,10 +5,10 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "ec2x-agent"
-    gem.summary = %Q{TODO}
-    gem.email = "github@tadman.ca"
-    gem.homepage = "http://github.com/tadman/ec2x-agent"
-    gem.authors = ["tadman"]
+    gem.summary = %Q{EC2x Agent Library}
+    gem.email = "github@twg.ca"
+    gem.homepage = "http://github.com/theworkinggroup/ec2x-agent"
+    gem.authors = %w[ theworkinggroup tadman ]
 
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
@@ -36,7 +36,6 @@ rescue LoadError
   end
 end
 
-
 task :default => :test
 
 require 'rake/rdoctask'
@@ -53,4 +52,3 @@ Rake::RDocTask.new do |rdoc|
   rdoc.rdoc_files.include('README*')
   rdoc.rdoc_files.include('lib/**/*.rb')
 end
-
