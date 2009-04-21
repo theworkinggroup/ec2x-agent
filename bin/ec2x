@@ -35,15 +35,24 @@ op.on("-h", "--help") { show_help }
 args = op.parse(*ARGV)
 
 begin
-  if (args.empty?)
-    if (options[:daemon])
-      Ec2x::Agent.run(options)
+  EventMachine::run do
+    if (args.empty?)
+      unless (options[:daemon])
+        Ec2x::Shell.run(options)
+      end
+      
+    #  EventMachine::Ec2x::Agent.run(options)
     else
-      Ec2x::Shell.run(options)
+      options[:args] = args
+     # Ec2x::CommandDelegator
     end
-  else
-    Ec2x::CommandDelegator.new(options).interpret(args)
   end
+
+  puts "\nDone."
+  
+rescue Interrupt
+  puts "\nQuit."
+  exit(-1)
 rescue Ec2x::Exception => e
   puts e.message
   puts "Exiting."
