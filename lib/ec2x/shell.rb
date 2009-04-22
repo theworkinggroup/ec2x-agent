@@ -5,28 +5,21 @@ class Ec2x::Shell < EventMachine::Connection #EventMachine::Protocols::LineAndTe
 
   # == Class Methods ========================================================
   
-  def self.run(options = { })
-    EventMachine::attach(STDIN, self, options)
+  def self.run(config)
+    EventMachine::attach(STDIN, self, config)
   end
 
   # == Instance Methods =====================================================
 
-  def initialize(sig, options = { })
+  def initialize(config)
     STDOUT.sync = true
     
-    super(sig)
+    super()
     
     puts "Console (ec2x-agent #{Ec2x::Config.version})"
 
-    @options = options
-    @options[:interactive] = true
-    @options[:verbose] = true
-    @config = @options[:config] ||= Ec2x::Config.new(@options)
-    
-    @agent = @options[:agent] ||= Ec2x::Agent.new(@options)
-    @agent.connect
-
-    @delegator = Ec2x::CommandDelegator.new(@options)
+    @config = config
+    @delegator = Ec2x::CommandDelegator.new(@config)
   end
   
   def notify_readable
@@ -53,7 +46,7 @@ class Ec2x::Shell < EventMachine::Connection #EventMachine::Protocols::LineAndTe
       return quit
     else
       # FIX: Naive token splitting needs improvement
-      @delegator.interpret(line)
+      @delegator.interpret(*line.split(/\s+/))
     end
     
     prompt

@@ -6,8 +6,9 @@ class Ec2x::Config
   ]
 
   DEFAULTS = {
-    :master_url => 'ec2x://localhost',
-    :default_port => 9116
+    :remote_url => 'ec2x://localhost',
+    :remote_port => 9116,
+    :yum_path => '/usr/bin/yum'
   }
 
   # == Class Methods ========================================================
@@ -24,35 +25,42 @@ class Ec2x::Config
   
   # == Instance Methods =====================================================
   
-  def initialize(options = { })
-    # TODO
-    @options = options
-    @config = { }
+  def initialize(options = nil)
+    @config = DEFAULTS.merge(options || { })
     
-    read_config(@options[:config_file])
+    merge_config_options
+    assign_extracted_host_port
   end
   
-  def read_config(config_file)
+  def config_file_path
     load_paths = DEFAULT_CONFIG_FILES
+    config_file_specified = @config[:config_file]
     
-    if (config_file)
-      unless (File.exist?(config_file))
-        raise Ec2x::Exception, "Could not locate config file #{config_file}"
+    if (config_file_specified)
+      unless (File.exist?(config_file_specified))
+        raise Ec2x::Exception, "Could not locate config file #{config_file_specified}"
       end
       
-      load_paths = [ config_file ]
+      load_paths = [ config_file_specified ]
     end
   
-    config_found =
-      load_paths.find do |path|
-        File.exist?(path)
+    load_paths.find do |path|
+      File.exist?(path)
+    end
+  end
+  
+  def merge_config_options
+    if (config_found = self.config_file_path)
+      if (config = YAML.load(open(config_found)))
+        config = Ec2x::symbolize_keys(config)
+        
+        @config = config.merge(@config)
+        puts "* Loaded configuration from #{config_found}" if (verbose?)
+      else
+        puts "* Configuration file is in unknown format." if (verbose?)
       end
-    
-    if (config_found)
-      @config = YAML.load(open(config_found))
-      puts "* Loaded configuration from #{config_found}" if (@options[:verbose])
     else
-      puts "* No configuration file found. Using defaults." if (@options[:verbose])
+      puts "* No configuration file found. Using defaults." if (verbose?)
     end
   end
   
@@ -68,5 +76,29 @@ class Ec2x::Config
   
   def inspect
     @config.inspect
+  end
+  
+  def interactive?
+    @config[:interactive]
+  end
+
+  def verbose?
+    @config[:verbose]
+  end
+
+protected
+  def assign_extracted_host_port
+    if (!@config[:remote_url] or @config[:remote_url].empty?)
+      raise Ex2x::Exception, "Configuration parameter 'remote_url' cannot be blank."
+    else
+      begin
+        if (uri = URI.parse(@config[:remote_url]))
+          @config[:remote_host] = uri.host
+          @config[:remote_port] = uri.port if (uri.port)
+        end
+      rescue URI::InvalidURIError
+        raise Ec2x::Exception, "Configuration parameter 'remote_url' is not in correct format: #{@config[:remote_url]}"
+      end
+    end
   end
 end

@@ -5,17 +5,36 @@ class Ec2x::CommandDelegator
   
   # == Instance Methods =====================================================
   
-  def initialize(options)
-    @config = options[:config] || Ec2x::Config.new(options)
+  def initialize(config)
+    @config = config
+    @bundle = { }
   end
   
   def interpret(*args)
+    command = args.shift
+    
+    loop do
+      if (delegate_options = Ec2x::Bundle.commands[command])
+        return delegate(delegate_options, args)
+      end
+      
+      if (args.empty?)
+        puts "Invalid command: #{command}"
+        return
+      end
+      
+      command << ' '
+      command << args.shift
+    end
   end
   
-  def delegate(name, args, options = { })
-    puts "#{name} #{args}"
+  def delegator_for(delegate_options)
+    @bundle[delegate_options[:delegate_class]] ||= delegate_options[:delegate_class].new
   end
   
-  def declare(name, delegate_class, delegate_method, options = { })
+  def delegate(delegate_options, args)
+    delegate_to = delegator_for(delegate_options)
+    
+    delegate_to.send(delegate_options[:delegate_method], *args)
   end
 end

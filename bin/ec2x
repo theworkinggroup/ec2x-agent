@@ -35,13 +35,16 @@ op.on("-h", "--help") { show_help }
 args = op.parse(*ARGV)
 
 begin
+  config = Ec2x::Config.new(options)
+  config[:logger] = Ec2x::Logger.new(config)
+  
   EventMachine::run do
     if (args.empty?)
       unless (options[:daemon])
-        Ec2x::Shell.run(options)
+        Ec2x::Shell.run(config)
       end
       
-    #  EventMachine::Ec2x::Agent.run(options)
+      Ec2x::Client.run(config)
     else
       options[:args] = args
      # Ec2x::CommandDelegator
