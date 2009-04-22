@@ -23,7 +23,18 @@ class Ec2x::Client < EventMachine::Connection
     end
   end
   
-  #    log_activity "Could not connect to server #{@config[:master_url]}" if (@config.verbose?)
+  def connection_completed
+  end
+  
+  def receive_data(data)
+    data = data.chomp
+    
+    case (data)
+    when 'HELO'
+      send_data("HELO #{Ec2x::Config.version}")
+    end
+    # ...
+  end
 
 protected
   def log_activity(message)

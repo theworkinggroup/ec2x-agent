@@ -18,4 +18,13 @@ require 'ec2x/bundle/help'
 require 'ec2x/bundle/gem'
 require 'ec2x/bundle/git'
 require 'ec2x/bundle/mysqld'
-require 'ec2x/bundle/yum'
+
+# FIX: Make config support command line parameters
+# FIX: Make Ec2x::Bundle an instance and not a singleton
+
+case (Ec2x::Support::SystemInfo.new(Ec2x::Config.new).platform)
+when :linux
+  require 'ec2x/bundle/yum'
+when :darwin
+  require 'ec2x/bundle/port'
+end

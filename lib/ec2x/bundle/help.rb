@@ -9,26 +9,29 @@ class Ec2x::Bundle::Help < Ec2x::Bundle
 
   def help(*args)
     if (args.empty?)
-      puts "Available Commands:"
-      
-      command_list.each do |cmd|
-        puts "* #{cmd}"
-      end
+      {
+        :commands => command_list
+      }
     else
       command = args.join(' ')
       
       if (command_params = Ec2x::Bundle.commands[command])
-        print "Usage: #{command}"
+        result =
+          {
+            :usage => command
+          }
         
         if (command_params[:required])
           command_params[:required].each do |arg|
-            print " #{arg.upcase}"
+            result[:usage] << " #{arg.upcase}"
           end
         end
         
-        print "\n"
+        result
       else
-        puts "Unknown command: #{command}"
+        {
+          :unknown_command => command
+        }
       end
     end
   end

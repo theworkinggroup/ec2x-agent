@@ -1,4 +1,4 @@
-class Ec2x::Bundle::Yum < Ec2x::Bundle
+class Ec2x::Bundle::Port < Ec2x::Bundle
   # == Constants ============================================================
 
   # == Class Methods ========================================================
@@ -7,16 +7,18 @@ class Ec2x::Bundle::Yum < Ec2x::Bundle
   
   declare_command :install_package,
     :required => %w[ name ],
-    :options => %w[ version ]
+    :options => %w[ version flags ]
 
   def install_package(name, options = { })
     {
-      :install_package => call_package_manager('install', name, *flags)
+      :install_package => call_package_manager('install', name)
     }
   end
 
 protected
   def call_package_manager(*args)
+    # FIX: Calling a system command may throw an exception so trap here
+    
     command = [ @config[:yum_path] ] + args
     result = system(command)
     

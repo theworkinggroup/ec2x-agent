@@ -46,7 +46,7 @@ class Ec2x::Shell < EventMachine::Connection #EventMachine::Protocols::LineAndTe
       return quit
     else
       # FIX: Naive token splitting needs improvement
-      @delegator.interpret(*line.split(/\s+/))
+      format_response(@delegator.interpret(*line.split(/\s+/)))
     end
     
     prompt
@@ -54,5 +54,10 @@ class Ec2x::Shell < EventMachine::Connection #EventMachine::Protocols::LineAndTe
   
   def quit
     EventMachine::stop_event_loop
+  end
+  
+protected
+  def format_response(response)
+    puts response.to_yaml
   end
 end

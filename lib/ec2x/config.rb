@@ -10,7 +10,9 @@ class Ec2x::Config
     :remote_port => 9116,
     :yum_path => '/usr/bin/yum',
     :uname_path => '/usr/bin/uname',
-    :ifconfig_path => '/sbin/ifconfig'
+    :ifconfig_path => '/sbin/ifconfig',
+    :df_path => '/bin/df',
+    :mount_path => '/bin/mount'
   }
 
   # == Class Methods ========================================================
