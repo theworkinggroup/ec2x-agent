@@ -15,6 +15,6 @@ class Ec2x::Bundle::Yum < Ec2x::Bundle
 
 protected
   def call_yum(*args)
-    system(Ec2x::Options.yum_path, *args)
+    system(@config[:yum_path], *args)
   end
 end

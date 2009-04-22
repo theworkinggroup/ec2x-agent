@@ -5,6 +5,7 @@ module Ec2x
   autoload(:Exception, 'ec2x/exception')
   autoload(:Logger, 'ec2x/logger')
   autoload(:Shell, 'ec2x/shell')
+  autoload(:Support, 'ec2x/support')
   
   def symbolize_keys(hash)
     hash.inject({ }) do |h, (k, v)|

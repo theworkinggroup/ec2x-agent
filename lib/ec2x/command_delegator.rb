@@ -29,7 +29,7 @@ class Ec2x::CommandDelegator
   end
   
   def delegator_for(delegate_options)
-    @bundle[delegate_options[:delegate_class]] ||= delegate_options[:delegate_class].new
+    @bundle[delegate_options[:delegate_class]] ||= delegate_options[:delegate_class].new(@config)
   end
   
   def delegate(delegate_options, args)

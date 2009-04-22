@@ -8,7 +8,8 @@ class Ec2x::Config
   DEFAULTS = {
     :remote_url => 'ec2x://localhost',
     :remote_port => 9116,
-    :yum_path => '/usr/bin/yum'
+    :yum_path => '/usr/bin/yum',
+    :uname_path => '/usr/bin/uname'
   }
 
   # == Class Methods ========================================================

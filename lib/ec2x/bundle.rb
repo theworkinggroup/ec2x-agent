@@ -27,4 +27,8 @@ class Ec2x::Bundle
   end
 
   # == Instance Methods =====================================================
+  
+  def initialize(config)
+    @config = config
+  end
 end
