@@ -22,4 +22,12 @@ class Ec2x::Bundle::Client < Ec2x::Bundle
       [ 'connection_status', 'unknown' ]
     ]
   end
+  
+  declare_command :ping
+  def ping
+    @config.client.ping
+    
+    [
+    ]
+  end
 end

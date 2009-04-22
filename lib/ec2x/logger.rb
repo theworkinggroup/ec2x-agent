@@ -11,10 +11,10 @@ class Ec2x::Logger
   def initialize(config)
     @config = config
     
-    @log = STDOUT
+    @log = !@config[:interactive] && STDOUT
   end
   
   def log(level, message)
-    @log.puts(LOG_FORMAT % [ Time.now.strftime(DATE_FORMAT), message ])
+    @log and @log.puts(LOG_FORMAT % [ Time.now.strftime(DATE_FORMAT), message ])
   end
 end

@@ -36,15 +36,15 @@ args = op.parse(*ARGV)
 
 begin
   config = Ec2x::Config.new(options)
-  config[:logger] = Ec2x::Logger.new(config)
+  config[:interactive] = true
   
   EventMachine::run do
     if (args.empty?)
+      config.client = Ec2x::Client.run(config)
+
       unless (options[:daemon])
         Ec2x::Shell.run(config)
       end
-      
-      Ec2x::Client.run(config)
     else
       options[:args] = args
      # Ec2x::CommandDelegator

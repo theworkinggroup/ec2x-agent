@@ -1,4 +1,4 @@
-class Ec2x::Client < EventMachine::Connection
+class Ec2x::Client < EventMachine::Protocols::LineAndTextProtocol
   # == Constants ============================================================
   
   # == Class Methods ========================================================
@@ -14,30 +14,41 @@ class Ec2x::Client < EventMachine::Connection
   # == Instance Methods =====================================================
   
   def initialize(config)
-    super()
+    super
     
     @config = config
+  end
 
+  def post_init
+    super
+    
     if (@config.verbose? and !@config.interactive?)
       puts "EC2x Agent (ec2x-agent #{Ec2x::Config.version})"
     end
   end
   
   def connection_completed
+    @config.logger.log(:debug, "Connected to server")
   end
   
-  def receive_data(data)
-    data = data.chomp
-    
-    case (data)
-    when 'HELO'
-      send_data("HELO #{Ec2x::Config.version}")
+  def receive_line(data)
+    if (data.match(/^HELO (\S+)/))
+      send_data("HELO ec2x/#{Ec2x::Config.version}\n")
+      @connection = :open
+    else
+      puts "? #{data}"
     end
-    # ...
   end
-
-protected
-  def log_activity(message)
-    puts Time.now.strftime("[%Y-%m-%d %H:%M:%S %z] ") + message
+  
+  def unbind
+    super
+    
+    @connection = nil
+  end
+  
+  # -- Functions ------------------------------------------------------------
+  
+  def ping
+    send_data("PING\n")
   end
 end

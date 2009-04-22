@@ -89,6 +89,22 @@ class Ec2x::Config
   def verbose?
     @config[:verbose]
   end
+  
+  def logger
+    @config[:logger] ||= Ec2x::Logger.new(self)
+  end
+
+  def logger=(value)
+    @config[:logger] = value
+  end
+
+  def client
+    @config[:client]
+  end
+
+  def client=(value)
+    @config[:client] = value
+  end
 
 protected
   def assign_extracted_host_port
